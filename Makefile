@@ -106,7 +106,7 @@ rpmtar:
                             mv /tmp/_tar1/$(notdir $(CURDIR)) \
                                /tmp/_tar2/"sems" && \
                             (cd /tmp/_tar2 && $(TAR) \
-                                            -zcf ~/rpmbuild/SOURCES/sems.tar.gz \
+                                            -zcf ~/rpmbuild/SOURCES/$(NAME)-$(RELEASE).tar.gz \
                                                        "sems" ) ; \
                             rm -rf tmp;
   

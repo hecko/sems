@@ -43,7 +43,7 @@ WORKDIR /sems
 # create RPM
 RUN mkdir -p /root/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 RUN USE_SPANDSP=1 make
-RUN make rpmtar
+RUN make RELEASE=1.8.0 rpmtar
 #RUN rpmbuild --define '_with_python 1' -ba pkg/rpm/sems.spec
 RUN rpmbuild -ba pkg/rpm/sems.spec
 RUN ls -al /root/rpmbuild/RPMS
