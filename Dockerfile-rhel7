@@ -13,6 +13,7 @@ RUN yum install -y epel-release \
         git \
         man \
         which \
+        git-core-doc \
         make \
         gcc-c++ \
         libevent-devel \
