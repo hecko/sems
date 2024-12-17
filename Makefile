@@ -83,13 +83,11 @@ tar:
 # the tarball can be used for rpm building 
 .PHONY: rpmtar
 rpmtar: 
-	RPM_VERSION=`cat pkg/rpm/sems.spec|grep -e "^Version:"|awk '{print $$2}'`; \
-	RPM_RELEASE=`cat pkg/rpm/sems.spec|grep -e "^Release:"|awk '{print $$2}'`; \
-	echo "RPM_VERSION=$${RPM_VERSION}"; \
-	echo "RPM_RELEASE=$${RPM_RELEASE}"; \
-	        $(TAR) -C .. \
-                --exclude=$(notdir $(CURDIR))/tmp \
-                --exclude=core/$(notdir $(CURDIR))/tmp \
+	rm -rf /tmp/_tar1
+	rm -rf /tmp/_tar2
+	$(TAR) -C .. \
+	--exclude=$(notdir $(CURDIR))/tmp \
+	--exclude=core/$(notdir $(CURDIR))/tmp \
                 --exclude=.svn* \
                 --exclude=.git* \
                 --exclude=.\#* \
@@ -103,13 +101,13 @@ rpmtar:
                 --exclude=*.tar \
                 --exclude=*~ \
                 -cf - $(notdir $(CURDIR)) | \
-                        (mkdir -p tmp/_tar1; mkdir -p tmp/_tar2 ; \
-                            cd tmp/_tar1; $(TAR) -xf - ) && \
-                            mv tmp/_tar1/$(notdir $(CURDIR)) \
-                               tmp/_tar2/"$(NAME)-$${RPM_VERSION}" && \
-                            (cd tmp/_tar2 && $(TAR) \
-                                            -zcf ../../"$(NAME)-$${RPM_VERSION}-$${RPM_RELEASE}".tar.gz \
-                                                       "$(NAME)-$${RPM_VERSION}" ) ; \
+                        (mkdir -p /tmp/_tar1; mkdir -p /tmp/_tar2 ; \
+                            cd /tmp/_tar1; $(TAR) -xf - ) && \
+                            mv /tmp/_tar1/$(notdir $(CURDIR)) \
+                               /tmp/_tar2/"sems" && \
+                            (cd /tmp/_tar2 && $(TAR) \
+                                            -zcf ~/rpmbuild/SOURCES/sems.tar.gz \
+                                                       "sems" ) ; \
                             rm -rf tmp;
   
 .PHONY: doc

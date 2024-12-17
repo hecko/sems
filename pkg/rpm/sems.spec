@@ -4,10 +4,10 @@
 
 Summary:	SIP Express Media Server, an extensible SIP media server
 Name:		sems
-Version:	1.7.0
-Release:	2.%{build_timestamp}%{?dist}
+Version:	1.8.0
+Release:	1%{?dist}
 URL:		https://github.com/sems-server/%{name}
-Source0:        https://github.com/sems-server/sems/archive/master.tar.gz
+Source0:        https://github.com/sems-server/sems/archive/%{name}-%{version}.tar.gz
 
 License:	GPLv2+
 BuildRequires:	bcg729-devel
@@ -227,15 +227,15 @@ XMLRPC servers.
 
 
 %prep
-# Temporary fix for adding versioning to the archive from the master
-cd ../SOURCES && tar -zxf master.tar.gz --transform s/sems-master/%{name}-%{version}/ && rm -f master.tar.gz
-tar cvzf master.tar.gz sems-1.7.0/ && cd ../BUILD
+cd ../SOURCES && tar xzfv sems.tar.gz --transform s/sems/%{name}-%{version}/ && tar czfv %{name}-%{version}.tar.gz %{name}-%{version}/
 
-%autosetup -p1
-mv ./apps/dsm/fsmc/readme.txt  ./apps/dsm/fsmc/Readme.fsmc.txt
+#%autosetup -p1
+#mv ./apps/dsm/fsmc/readme.txt  ./apps/dsm/fsmc/Readme.fsmc.txt
 
 %build
-%{cmake} .. -DCMAKE_C_FLAGS_RELEASE:STRING=-DNDEBUG \
+mkdir -p %{_builddir}/%{name}-%{version}-build
+cd %{_builddir}/%{name}-%{version}-build
+%{cmake3} %{_builddir}/%{name}-%{version} -DCMAKE_C_FLAGS_RELEASE:STRING=-DNDEBUG \
 	-DCMAKE_CXX_FLAGS_RELEASE:STRING=-DNDEBUG \
 	-DCMAKE_Fortran_FLAGS_RELEASE:STRING=-DNDEBUG \
 	-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
@@ -264,34 +264,46 @@ mv ./apps/dsm/fsmc/readme.txt  ./apps/dsm/fsmc/Readme.fsmc.txt
 	-DSEMS_LIBDIR=lib64 \
 	-DSEMS_DOC_PREFIX=/usr/share/doc
 
-%cmake_build
+%cmake3_build
 
 %install
-%cmake_install
+# Clean up the buildroot directory
+# rm -rf %{buildroot}
+cd %{_builddir}/%{name}-%{version}-build
 
+# Perform CMake installation
+%cmake3_install
+
+# Navigate to the build directory (if required for additional steps)
+cd %{_builddir}/%{name}-%{version}
+
+# Install system configuration file
 install -D -m 0644 -p pkg/rpm/sems.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 
-# install systemd files
+# Install systemd service and tmpfiles configuration
 install -D -m 0644 -p pkg/rpm/sems.systemd.service %{buildroot}%{_unitdir}/%{name}.service
 install -D -m 0644 -p pkg/rpm/sems.systemd.tmpfiles.d.conf %{buildroot}%{_tmpfilesdir}/%{name}.conf
 
+# Create runtime and spool directories
 mkdir -p %{buildroot}%{_localstatedir}/run/%{name}
 mkdir -p %{buildroot}%{_localstatedir}/spool/%{name}/voicebox
 
-# Remove installed docs
+# Remove installed documentation that isn't required
 rm -rf %{buildroot}%{_docdir}/%{name}
 rm -rf %{buildroot}%{_sysconfdir}/%{name}/default.template.sample
 rm -rf %{buildroot}%{_sysconfdir}/%{name}/sems.conf.default
 
-# remove currently empty conf-file
-rm -f %{buildroot}%{_sysconfdir}/%{name}/etc/conf_auth.conf
+# Remove empty configuration files
+#rm -f %{buildroot}%{_sysconfdir}/%{name}/etc/conf_auth.conf
 
-# add empty directories for audiofiles
+# Add directories for audio files
 mkdir -p %{buildroot}%{_datadir}/%{name}/audio/ann_b2b
 mkdir -p %{buildroot}%{_datadir}/%{name}/audio/announcement
 mkdir -p %{buildroot}%{_datadir}/%{name}/audio/announce_transfer
 
+# Debug: List the contents of the buildroot directory for verification
 ls -laR %{buildroot}
+
 
 %pre
 getent passwd %{name} >/dev/null || \
@@ -341,7 +353,7 @@ getent passwd %{name} >/dev/null || \
 %config(noreplace) %{_sysconfdir}/%{name}/etc/callback.conf
 %config(noreplace) %{_sysconfdir}/%{name}/etc/click2dial.conf
 %config(noreplace) %{_sysconfdir}/%{name}/etc/echo.conf
-%config(noreplace) %{_sysconfdir}/%{name}/etc/jsonrpc.conf
+#%config(noreplace) %{_sysconfdir}/%{name}/etc/jsonrpc.conf
 %config(noreplace) %{_sysconfdir}/%{name}/etc/monitoring.conf
 %config(noreplace) %{_sysconfdir}/%{name}/etc/msg_storage.conf
 %config(noreplace) %{_sysconfdir}/%{name}/etc/mwi.conf
@@ -523,7 +535,7 @@ getent passwd %{name} >/dev/null || \
 %{_libdir}/%{name}/plug-in/click2dial.so
 %{_libdir}/%{name}/plug-in/codec2.so
 %{_libdir}/%{name}/plug-in/echo.so
-%{_libdir}/%{name}/plug-in/jsonrpc.so
+#%{_libdir}/%{name}/plug-in/jsonrpc.so
 %{_libdir}/%{name}/plug-in/isac.so
 %{_libdir}/%{name}/plug-in/l16.so
 %{_libdir}/%{name}/plug-in/monitoring.so
@@ -541,13 +553,13 @@ getent passwd %{name} >/dev/null || \
 %{_libdir}/%{name}/plug-in/wav.so
 %{_libdir}/%{name}/plug-in/webconference.so
 
-%if 0%{?_with_python}
-%files conf_auth
- currently empty
-%config(noreplace) %{_sysconfdir}/%{name}/etc/conf_auth.conf
-%doc doc/Readme.conf_auth.txt
-%{_libdir}/%{name}/ivr/conf_auth.py*
-%endif
+#%if 0%{?_with_python}
+#%files conf_auth
+# currently empty
+#%config(noreplace) %{_sysconfdir}/%{name}/etc/conf_auth.conf
+#%doc doc/Readme.conf_auth.txt
+#%{_libdir}/%{name}/ivr/conf_auth.py*
+#%endif
 
 %files conference
 %config(noreplace) %{_sysconfdir}/%{name}/etc/conference.conf

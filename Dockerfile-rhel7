@@ -26,17 +26,27 @@ RUN yum install -y epel-release \
         spandsp-devel \
         mysql-connector-c++ \
         python3-mysqlclient --nogpgcheck \
+        rpm-build \
     && ln -s /usr/lib64/libmysqlcppconn8.so.2 /usr/lib64/libmysqlcppconn.so
+
+RUN ln -s /usr/lib64/libpython3.6m.so /usr/lib64/libpython3.6.so
 
 WORKDIR /
 
-RUN git clone --depth 1 --branch python3-rhel7 https://github.com/hecko/sems.git
+RUN git clone --depth 1 --branch fb https://github.com/hecko/sems.git
 
 WORKDIR /sems
 
-RUN ln -s /usr/lib64/libpython3.6m.so /usr/lib64/libpython3.6.so
+# create RPM
+RUN mkdir -p /root/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 RUN USE_SPANDSP=1 make
-RUN USE_SPANDSP=1 make install
+RUN make rpmtar
+#RUN rpmbuild --define '_with_python 1' -ba pkg/rpm/sems.spec
+RUN rpmbuild -ba pkg/rpm/sems.spec
+RUN ls -al /root/rpmbuild/RPMS
+
+#RUN USE_SPANDSP=1 make
+#RUN USE_SPANDSP=1 make install
 
 # Run SEMS with the specified configuration
 CMD ["/usr/local/sbin/sems", "-E", "-f", "/usr/local/etc/sems/sems.conf"]
