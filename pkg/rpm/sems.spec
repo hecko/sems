@@ -7,7 +7,7 @@ Name:		sems
 Version:	1.8.0
 Release:	1%{?dist}
 URL:		https://github.com/sems-server/%{name}
-Source0:        https://github.com/sems-server/sems/archive/%{name}-%{version}.tar.gz
+Source0:        https://github.com/sems-server/sems/archive/%{name}.tar.gz
 
 License:	GPLv2+
 BuildRequires:	bcg729-devel
