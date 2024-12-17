@@ -37,9 +37,9 @@ RUN yum install -y epel-release \
         mysql-connector-c++-devel \
         mysql-connector-c++ \
         python3-mysqlclient --nogpgcheck \
-        rpm-build \
-    && ln -s /usr/lib64/libmysqlcppconn8.so.2 /usr/lib64/libmysqlcppconn.so
+        rpm-build
 
+# RUN ln -s /usr/lib64/libmysqlcppconn8.so.2 /usr/lib64/libmysqlcppconn.so
 RUN ln -s /usr/lib64/libpython3.6m.so /usr/lib64/libpython3.6.so
 
 WORKDIR /
