@@ -227,7 +227,8 @@ XMLRPC servers.
 
 
 %prep
-cd ../SOURCES && tar xzfv sems.tar.gz --transform s/sems/%{name}-%{version}/ && tar czfv %{name}-%{version}.tar.gz %{name}-%{version}/
+cd ../SOURCES && tar xzfv sems.tar.gz --transform s/sems/%{name}-%{version}/
+cd ../SOURCES && rm -rf sems.tra.gz && tar czfv %{name}.tar.gz %{name}-%{version}/
 
 #%autosetup -p1
 #mv ./apps/dsm/fsmc/readme.txt  ./apps/dsm/fsmc/Readme.fsmc.txt
