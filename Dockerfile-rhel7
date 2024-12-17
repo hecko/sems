@@ -56,8 +56,7 @@ RUN make rpmtar
 RUN rpmbuild -ba pkg/rpm/sems.spec
 RUN ls -al /root/rpmbuild/RPMS
 
-#RUN USE_SPANDSP=1 make
-#RUN USE_SPANDSP=1 make install
+RUN USE_SPANDSP=1 make install
 
 # Run SEMS with the specified configuration
 CMD ["/usr/local/sbin/sems", "-E", "-f", "/usr/local/etc/sems/sems.conf"]
