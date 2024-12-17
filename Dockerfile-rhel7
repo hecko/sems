@@ -27,6 +27,14 @@ RUN yum install -y epel-release \
         zlib-devel \
         libcurl-devel \
         spandsp-devel \
+        bcg729-devel \
+        cmake3 \
+        codec2-devel \
+        flite-devel \
+        lame-devel \
+        libmpg123-devel \
+        libsamplerate-devel \
+        mysql-connector-c++-devel \
         mysql-connector-c++ \
         python3-mysqlclient --nogpgcheck \
         rpm-build \
