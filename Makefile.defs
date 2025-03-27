@@ -96,7 +96,7 @@ USE_MONITORING=yes
 LONG_DEBUG_MESSAGE=yes
 
 # Is this a debug build or not?
-debug=no
+debug=yes
 
 # Propagate all unparsed SIP headers into AmSipReply. Disabled by default
 # because only special applications might need this and it brings higher memory

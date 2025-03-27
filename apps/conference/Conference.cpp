@@ -168,7 +168,11 @@ int ConferenceFactory::onLoad()
 
   /* Get default audio from MySQL */
 
-  string mysql_server, mysql_user, mysql_passwd, mysql_db, mysql_ca_cert;
+  string mysql_server;
+  string mysql_user;
+  string mysql_passwd;
+  string mysql_db;
+  string mysql_ca_cert;
 
   mysql_server = cfg.getParameter("mysql_server");
   if (mysql_server.empty()) {
@@ -416,6 +420,7 @@ void ConferenceDialog::onStart() {
 
 void ConferenceDialog::onInvite(const AmSipRequest& req)
 {
+  DBG("Calling function ConferenceDialog::onInvite\n");
   if(dlg->getStatus() == AmSipDialog::Connected){
     AmSession::onInvite(req);
     return;
@@ -448,13 +453,31 @@ void ConferenceDialog::onInvite(const AmSipRequest& req)
     }
   }
 
+  DBG("Processing extra_headers: '%s'\n", extra_headers.c_str());
   len = extra_headers.length();
+  DBG("Length of extra_headers: %d\n", len);
   for (i = 0; i < len; i++) {
-    if (extra_headers[i] == '|') extra_headers[i] = '\n';
+      DBG("Processing character at index %d of extra_headers: %c\n", i, extra_headers[i]);
+      if (extra_headers[i] == '|') {
+          DBG("Replacing '|' with '\\n' at index %d\n", i);
+          extra_headers[i] = '\n';
+      } else {
+          DBG("Character at index %d is not '|', keeping it as is\n", i);
+      }
   }
-  if (extra_headers[len - 1] != '\n') {
-      extra_headers += '\n';
+
+  if (len > 0) {
+      DBG("Checking if the last character of extra_headers is '\\n'\n");
+      if (extra_headers[len - 1] != '\n') {
+          DBG("Last character is not '\\n', appending '\\n' to extra_headers\n");
+          extra_headers += '\n';
+      } else {
+          DBG("Last character is already '\\n' - doing nothing with last character.\n");
+      }
+  } else {
+      DBG("extra_headers is empty, skipping last character check\n");
   }
+  DBG("Final processed extra_headers: '%s'\n", extra_headers.c_str());
 
   if (dialout_suffix.length() == 0) {
     if (!ConferenceFactory::DialoutSuffix.empty()) {
