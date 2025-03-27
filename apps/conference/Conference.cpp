@@ -420,7 +420,6 @@ void ConferenceDialog::onStart() {
 
 void ConferenceDialog::onInvite(const AmSipRequest& req)
 {
-  DBG("Calling function ConferenceDialog::onInvite\n");
   if(dlg->getStatus() == AmSipDialog::Connected){
     AmSession::onInvite(req);
     return;
@@ -453,31 +452,19 @@ void ConferenceDialog::onInvite(const AmSipRequest& req)
     }
   }
 
-  DBG("Processing extra_headers: '%s'\n", extra_headers.c_str());
   len = extra_headers.length();
-  DBG("Length of extra_headers: %d\n", len);
-  for (i = 0; i < len; i++) {
-      DBG("Processing character at index %d of extra_headers: %c\n", i, extra_headers[i]);
-      if (extra_headers[i] == '|') {
-          DBG("Replacing '|' with '\\n' at index %d\n", i);
-          extra_headers[i] = '\n';
-      } else {
-          DBG("Character at index %d is not '|', keeping it as is\n", i);
-      }
-  }
-
   if (len > 0) {
-      DBG("Checking if the last character of extra_headers is '\\n'\n");
-      if (extra_headers[len - 1] != '\n') {
-          DBG("Last character is not '\\n', appending '\\n' to extra_headers\n");
-          extra_headers += '\n';
-      } else {
-          DBG("Last character is already '\\n' - doing nothing with last character.\n");
+    DBG("Processing extra headers: '%s'\n", extra_headers.c_str());
+    for (i = 0; i < len; i++) {
+      if (extra_headers[i] == '|') {
+          extra_headers[i] = '\n';
       }
-  } else {
-      DBG("extra_headers is empty, skipping last character check\n");
+    }
+    if (extra_headers[len - 1] != '\n') {
+          extra_headers += '\n';
+    }
+    DBG("Extra headers processed: '%s'\n", extra_headers.c_str());
   }
-  DBG("Final processed extra_headers: '%s'\n", extra_headers.c_str());
 
   if (dialout_suffix.length() == 0) {
     if (!ConferenceFactory::DialoutSuffix.empty()) {
